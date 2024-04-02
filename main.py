@@ -2,26 +2,26 @@ import pygame
 import sys
 from pygame.locals import *
 
-MOVE_SPEED = 20
+MOVE_SPEED = 4
 
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((562,600))
+screen = pygame.display.set_mode((360,640))
 
-bg = pygame.image.load("bgimage.webp")
-car = pygame.image.load("gohstpng.png")
+bg = pygame.image.load("background.png")
+player = pygame.image.load("character.png")
 
 
-car_x = screen.get_width()/2 + 10
-car_y = screen.get_height() - car.get_size()[1]
+player_x = screen.get_width()/2 + 10
+player_y = screen.get_height() - player.get_size()[1]
 
 
 
 def check_boundries():
-    global car_x
-    if car_x<0:
-        car_x=0
-    if car_x>screen.get_width()-car.get_size()[0]:
-        car_x = screen.get_width()-car.get_size()[0]
+    global player_x
+    if player_x<0:
+        player_x=0
+    if player_x>screen.get_width()-player.get_size()[0]:
+        player_x = screen.get_width()-player.get_size()[0]
 
 
 
@@ -33,15 +33,15 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-        elif event.type == pygame.KEYDOWN:
-            if event.key == K_LEFT:
-                car_x -= MOVE_SPEED
-            elif event.key == K_RIGHT:
-                car_x += MOVE_SPEED
+    if event.type == pygame.KEYDOWN:
+        if event.key == K_LEFT:
+            player_x -= MOVE_SPEED
+        elif event.key == K_RIGHT:
+            player_x += MOVE_SPEED
     
     check_boundries()
     screen.blit(bg,(0,0))
-    screen.blit(car, (car_x,car_y))
+    screen.blit(player, (player_x,player_y))
 
 
     pygame.display.update()
