@@ -38,6 +38,11 @@ while True:
             player_x -= MOVE_SPEED
         elif event.key == K_RIGHT:
             player_x += MOVE_SPEED
+        elif event.key == K_UP:
+            player_y -= MOVE_SPEED
+        elif event.key == K_DOWN:
+            player_y += MOVE_SPEED
+        
     
     check_boundries()
     screen.blit(bg,(0,0))
