@@ -5,7 +5,7 @@ from pygame.locals import *
 
 MOVE_SPEED = 4
 ENEMY_SPEED = 2
-MAX_PLAYERS = 2
+MAX_PLAYERS = 7
 LEFT_BORDER = 0
 RIGHT_BORDER = 360
  
@@ -61,7 +61,7 @@ def movePlayers():  #move the enemies on screen
 
 
 
-def check_boundries():
+def check_boundaries():
     global player_x
     global player_y
     if player_x < 0:
@@ -73,10 +73,12 @@ def check_boundries():
     if player_y > screen.get_height()-player.get_size()[1]:
         player_y = screen.get_height()-player.get_size()[1]
 
-# def remove_enemies():
-#     global enemies
-#     for player in enemies:
-#         if player[1] 
+def remove_enemies():
+    global enemies
+    for player in enemies:
+        if player[1] > screen.get_height()-enemy.get_size()[1]:
+            enemies.remove(player)
+            
 
 pygame.display.set_caption('bullet hell shooter')
 
@@ -110,7 +112,8 @@ while True:
     movePlayers()
     generatePalyers()
     showPlayers()
-    check_boundries()
+    check_boundaries()
+    remove_enemies()
     
     screen.blit(player, (player_x,player_y))
 
