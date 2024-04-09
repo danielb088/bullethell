@@ -5,7 +5,7 @@ from pygame.locals import *
 
 MOVE_SPEED = 4
 ENEMY_SPEED = 2
-MAX_PLAYERS = 7
+MAX_PLAYERS = 15
 LEFT_BORDER = 0
 RIGHT_BORDER = 360
  
@@ -39,11 +39,11 @@ def generatePalyers():
         x = random.randint(0,1)
         print(x)
         if x==0:
-            x = random.randint(LEFT_BORDER,LEFT_BORDER+player.get_size()[0])
+            x = random.randint(LEFT_BORDER,LEFT_BORDER+screen.get_width())
             print(x)
             enemies.append([x,0])
         else:
-            x = random.randint(screen.get_width()//2 + 10,RIGHT_BORDER)
+            x = random.randint(0,RIGHT_BORDER)
             enemies.append([x,0])
 
 
