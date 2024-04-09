@@ -6,8 +6,8 @@ from pygame.locals import *
 MOVE_SPEED = 4
 ENEMY_SPEED = 2
 MAX_PALYERS = 2
-LEFT_LANE_X = 0
-RIGHT_LANE_X = 360
+LEFT_BORDER = 0
+RIGHT_BORDER = 360
  
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((360,640))
@@ -39,11 +39,11 @@ def generatePalyers():
         x = random.randint(0,1)
         print(x)
         if x==0:
-            x = random.randint(LEFT_LANE_X,LEFT_LANE_X+player.get_size()[0])
+            x = random.randint(LEFT_BORDER,LEFT_BORDER+player.get_size()[0])
             print(x)
             players.append([x,0])
         else:
-            x = random.randint(screen.get_width()//2 + 10,RIGHT_LANE_X)
+            x = random.randint(screen.get_width()//2 + 10,RIGHT_BORDER)
             players.append([x,0])
 
 
@@ -67,16 +67,17 @@ def check_boundries():
     if player_x>screen.get_width()-player.get_size()[0]:
         player_x = screen.get_width()-player.get_size()[0]
 
-
-
-
-pygame.display.set_caption('bullet hell shooter')
-
-while True:
-    clock.tick(60)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
+def MOVEMENT_1():
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        player_x -= MOVE_SPEED
+    if keys[pygame.K_RIGHT]:
+        player_x += MOVE_SPEED
+    if keys[pygame.K_UP]:
+        player_y -= MOVE_SPEED
+    if keys[pygame.K_DOWN]:
+        player_y += MOVE_SPEED
+def MOVEMENT_2():
     if event.type == pygame.KEYDOWN:
         if event.key == K_LEFT:
             player_x -= MOVE_SPEED
@@ -86,6 +87,17 @@ while True:
             player_y -= MOVE_SPEED
         if event.key == K_DOWN:
             player_y += MOVE_SPEED
+
+pygame.display.set_caption('bullet hell shooter')
+
+while True:
+    clock.tick(60)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+        
+    MOVEMENT_1()
+    # MOVEMENT_2()
         
     screen.blit(bg,(0,0))
     movePlayers()
