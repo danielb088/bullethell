@@ -3,13 +3,17 @@ import sys
 import random
 from pygame.locals import *
 
+pygame.init()
+
 MOVE_SPEED = 4
 ENEMY_SPEED = 1
 MAX_PLAYERS = 10
 LEFT_BORDER = 0
 RIGHT_BORDER = 360
+score = 0
 
- 
+font = pygame.font.SysFont("Arial", 26)
+
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((360,640))
 
@@ -85,6 +89,7 @@ def collision_detect():
     global ENEMY_SIZE
     global player_x
     global player_y
+    global score
 
     RECT_PLAYER = Rect(player_x, player_y, PLAYER_SIZE[0], PLAYER_SIZE[1])
     for enemy in enemies:
@@ -92,8 +97,8 @@ def collision_detect():
         collide = pygame.Rect.colliderect(RECT_PLAYER, RECT_ENEMY)
         if collide:
             print("you have been hit")
+            score = 0
             
-
 pygame.display.set_caption('bullet hell shooter')
 
 while True:
@@ -130,6 +135,8 @@ while True:
     check_boundaries()
     remove_enemies()
     
+    txtsurf = font.render("score:"+str(score), True, (255,255,0))
+    screen.blit(txtsurf,(260,10))
     screen.blit(player, (player_x,player_y))
-
+    score += 1
     pygame.display.update()
