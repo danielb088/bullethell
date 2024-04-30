@@ -2,8 +2,10 @@ import pygame
 import sys
 import random
 from pygame.locals import *
+from pygame import mixer
 
 pygame.init()
+mixer.init()
 
 MOVE_SPEED = 4
 ENEMY_SPEED = 1
@@ -27,6 +29,8 @@ PLAYER_SIZE = player.get_size()
 player_x = screen.get_width()/2 + 10
 player_y = screen.get_height() - player.get_size()[1]
 
+mixer.music.load("bg_music_jsb.mp3")
+mixer.music.play()
 enemies = []
 
 def findTopPlayerY():
@@ -91,11 +95,12 @@ def collision_detect():
     global player_y
     global score
 
-    RECT_PLAYER = Rect(player_x, player_y, PLAYER_SIZE[0], PLAYER_SIZE[1])
+    RECT_PLAYER = Rect(player_x, player_y, PLAYER_SIZE[0] * 0.55, PLAYER_SIZE[1] * 0.55)
     for enemy in enemies:
-        RECT_ENEMY = Rect(enemy[0], enemy[1], ENEMY_SIZE[0], ENEMY_SIZE[1])
+        RECT_ENEMY = Rect(enemy[0], enemy[1], ENEMY_SIZE[0] * 0.55, ENEMY_SIZE[1] * 0.55)
         collide = pygame.Rect.colliderect(RECT_PLAYER, RECT_ENEMY)
         if collide:
+            sys.exit()
             print("you have been hit")
             score = 0
             
