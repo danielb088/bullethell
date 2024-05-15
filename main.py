@@ -5,12 +5,12 @@ from pygame.locals import *
 from pygame import mixer
 
 pygame.init()
-mixer.init()
 
+MAX_BULLETS = 1
 MOVE_SPEED = 4
 ENEMY_SPEED = 1
-BULLET_SPEED = 2
-MAX_ENEMIES = 200
+BULLET_SPEED = 20
+MAX_ENEMIES = 50
 LEFT_BORDER = 0
 RIGHT_BORDER = 360
 score = 0
@@ -23,17 +23,20 @@ screen = pygame.display.set_mode((360,640))
 bg = pygame.image.load("background.png")
 player = pygame.image.load("character.png")
 enemy = pygame.image.load("enemies.png")
+bullet_img = pygame.image.load("laser_pygame.png")
 
 ENEMY_SIZE = enemy.get_size()
 PLAYER_SIZE = player.get_size()
+BULLET_SIZE = bullet_img.get_size()
 
 player_x = screen.get_width()/2 + 10
 player_y = screen.get_height() - player.get_size()[1]
 
-hit_sound = pygame.mixer.Sound("bullet_sound.wav")
+hit_sound = pygame.mixer.Sound("glass_sound_py.wav")
 
 mixer.music.load("bg_music_jsb.mp3")
 mixer.music.play(-1)
+
 enemies = []
 bullets = []
 
@@ -41,9 +44,9 @@ def findTopPlayerY():
     global enemies
     min_y=screen.get_height()
 
-    for car in enemies:
-        if car[1]<min_y:
-            min_y=car[1]
+    for enemy in enemies:
+        if enemy[1]<min_y:
+            min_y=enemy[1]
     return min_y 
 
 def generateEnemies():
@@ -52,7 +55,7 @@ def generateEnemies():
         x = random.randint(0,1)
         print(x)
         if x==0:
-            x = random.randint(LEFT_BORDER,LEFT_BORDER+screen.get_width())
+            x = random.randint(LEFT_BORDER,LEFT_BORDER+screen.get_width() - enemy.get_width())
             print(x)
             enemies.append([x,0])
         else:
@@ -60,7 +63,6 @@ def generateEnemies():
             enemies.append([x,0])
 
 def showEnemies():
-    print(enemies)
     global screen
     for player in enemies:
         screen.blit(enemy, (player[0],player[1]))
@@ -105,6 +107,7 @@ def collision_detect():
             sys.exit()
             print("you have been hit")
             score = 0
+
 def generate_bullets():
     global player_x
     global player_y
@@ -113,13 +116,14 @@ def generate_bullets():
     #         if event.key == pygame.K_j: 
     #             bullets.append([player_x, player_y])
     action = pygame.key.get_pressed()
-    if action[pygame.K_j]:
+    if action[pygame.K_j] and len(bullets) < MAX_BULLETS:
         bullets.append([player_x, player_y])
 
 def show_bullets():
     global screen
+    print(bullets)
     for bullet in bullets:
-        screen.blit(player, (bullet[0], bullet[1]))
+        screen.blit(bullet_img, (bullet[0], bullet[1]))
 
 
 def move_bullets():
@@ -132,17 +136,33 @@ def bullet_detect():
     global enemies
     global bullets
     for enemy in enemies:
-        RECT_ENEMY = Rect(enemy[0], enemy[1], ENEMY_SIZE[0] * 0.55, ENEMY_SIZE[1] * 0.55)
+        RECT_ENEMY = Rect(enemy[0], enemy[1], ENEMY_SIZE[0] , ENEMY_SIZE[1] )
         for bullet in bullets:
-            RECT_BULLET = Rect(bullet[0], bullet[1], PLAYER_SIZE[0] * 0.55, PLAYER_SIZE[1] * 0.55)
+            RECT_BULLET = Rect(bullet[0], bullet[1], BULLET_SIZE[0] * 0.6, BULLET_SIZE[1] * 0.6 )
             collide_2 = pygame.Rect.colliderect(RECT_BULLET, RECT_ENEMY)
             if collide_2:
                 if enemy in enemies:
                     enemies.remove(enemy)
                     hit_sound.play()
+                    bullets.remove(bullet)
+
             
+def remove_bullets():
+    global bullets
+    for bullet in bullets:
+        if bullet[1] < 0:
+            bullets.remove(bullet)
 
+def highscore():
+    with open("highscore.txt", "w+") as scorefile:
+        highscore = scorefile.read()
 
+        if len(highscore) > 0:
+            highscore = int(highscore)
+            if highscore < score:
+                scorefile.write(str(score))
+        else:
+            scorefile.write(str(score))
 pygame.display.set_caption('bullet hell shooter')
 
 while True:
@@ -182,46 +202,13 @@ while True:
     collision_detect()
     check_boundaries()
     remove_enemies()
+    remove_bullets()
     
     txtsurf = font.render("score:"+str(score), True, (255,255,0))
     screen.blit(txtsurf,(250,10))
     screen.blit(player, (player_x,player_y))
     score += 1
+    highscore()
     pygame.display.update()
-# while True:
-#     clock.tick(60)
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             sys.exit()
-
-#         # Handle key press events for movement
-#         keys = pygame.key.get_pressed()
-#         if keys[pygame.K_LEFT]:
-#             player_x -= MOVE_SPEED
-#         if keys[pygame.K_RIGHT]:
-#             player_x += MOVE_SPEED
-#         if keys[pygame.K_UP]:
-#             player_y -= MOVE_SPEED
-#         if keys[pygame.K_DOWN]:
-#             player_y += MOVE_SPEED
-
-#         # Handle key press event for shooting (the 'j' key)
-#         if event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_j:
-#                 bullets.append([player_x, player_y])
-
-#     screen.blit(bg, (0, 0))
-#     generateEnemies()
-#     moveEnemies()
-#     showEnemies()
-#     show_bullets()
-#     move_bullets()
-#     collision_detect()
-#     check_boundaries()
-#     remove_enemies()
-
-#     txtsurf = font.render("score:" + str(score), True, (255, 255, 0))
-#     screen.blit(txtsurf, (250, 10))
-#     screen.blit(player, (player_x, player_y))
-#     score += 1
-#     pygame.display.update()
+# with open
+sys.exit()
