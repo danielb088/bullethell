@@ -104,6 +104,8 @@ def collision_detect():
         RECT_ENEMY = Rect(enemy[0], enemy[1], ENEMY_SIZE[0] * 0.55, ENEMY_SIZE[1] * 0.55)
         collide = pygame.Rect.colliderect(RECT_PLAYER, RECT_ENEMY)
         if collide:
+            if load_highscore() < score:
+                save_highscore(score)
             sys.exit()
             print("you have been hit")
             score = 0
@@ -116,7 +118,7 @@ def generate_bullets():
     #         if event.key == pygame.K_j: 
     #             bullets.append([player_x, player_y])
     action = pygame.key.get_pressed()
-    if action[pygame.K_j] and len(bullets) < MAX_BULLETS:
+    if action[pygame.K_s] or action[pygame.K_SPACE]and len(bullets) < MAX_BULLETS:
         bullets.append([player_x, player_y])
 
 def show_bullets():
@@ -135,12 +137,14 @@ def move_bullets():
 def bullet_detect():
     global enemies
     global bullets
+    global score
     for enemy in enemies:
         RECT_ENEMY = Rect(enemy[0], enemy[1], ENEMY_SIZE[0] , ENEMY_SIZE[1] )
         for bullet in bullets:
             RECT_BULLET = Rect(bullet[0], bullet[1], BULLET_SIZE[0] * 0.6, BULLET_SIZE[1] * 0.6 )
             collide_2 = pygame.Rect.colliderect(RECT_BULLET, RECT_ENEMY)
             if collide_2:
+                score += 500
                 if enemy in enemies:
                     enemies.remove(enemy)
                     hit_sound.play()
@@ -152,17 +156,29 @@ def remove_bullets():
     for bullet in bullets:
         if bullet[1] < 0:
             bullets.remove(bullet)
+def load_highscore():
+    try:
+        with open("highscore.txt", "r") as scorefile:
+            highscore = scorefile.read().strip()
+            if highscore.isdigit():
+                return int(highscore)
+    except FileNotFoundError:
+        pass
+    return 0
 
-def highscore():
+def save_highscore(new_score):
+    with open("highscore.txt", "w") as scorefile:
+        scorefile.write(str(new_score))
+
+def r_w_highscore():
     with open("highscore.txt", "w+") as scorefile:
         highscore = scorefile.read()
-
         if len(highscore) > 0:
-            highscore = int(highscore)
-            if highscore < score:
+            if score > int(highscore):
                 scorefile.write(str(score))
         else:
-            scorefile.write(str(score))
+            scorefile.write("0")
+
 pygame.display.set_caption('bullet hell shooter')
 
 while True:
@@ -203,12 +219,10 @@ while True:
     check_boundaries()
     remove_enemies()
     remove_bullets()
-    
-    txtsurf = font.render("score:"+str(score), True, (255,255,0))
-    screen.blit(txtsurf,(250,10))
+    score_txt = font.render("score:"+str(score), True, (255,255,0))
+    # highscore_txt = font.render("high score:"+str(highscore), True, (0,0,255))
+    screen.blit(score_txt,(250,10))
+    # screen.blit(highscore_txt, (50,10))
     screen.blit(player, (player_x,player_y))
     score += 1
-    highscore()
     pygame.display.update()
-# with open
-sys.exit()
